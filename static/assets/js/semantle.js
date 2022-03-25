@@ -262,7 +262,7 @@ let Semantle = (function() {
         try {
             const yesterdayNearby = await getNearby(yesterday);
             const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
-            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closensess. <a href="nearby_1k/${secretBase64}">More?</a>`;
+            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closeness. <a href="nearby_1k/${secretBase64}">More?</a>`;
         } catch (e) {
             $('#nearbyYesterday').innerHTML = `Coming soon!`;
         }
