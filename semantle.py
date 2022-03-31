@@ -18,6 +18,9 @@ app = Flask(__name__)
 def send_index():
     return send_file("static/index.html")
 
+@app.route("/make")
+def send_make():
+    return send_file("static/make.html")
 
 @app.route("/favicon.ico")
 def send_favicon():

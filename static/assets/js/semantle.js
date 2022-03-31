@@ -9,6 +9,16 @@
 */
 'use strict';
 
+const now = Date.now();
+const today = Math.floor(now / 86400000);
+const initialDay = 19021;
+function getPuzzleNumber(day) {
+    return (day - initialDay) % secretWords.length;
+}
+function getSecretWord(day) {
+    return secretWords[getPuzzleNumber(day)];
+}
+
 let gameOver = false;
 let firstGuess = true;
 let guesses = [];
@@ -16,13 +26,11 @@ let latestGuess = undefined;
 let guessed = new Set();
 let guessCount = 0;
 let model = null;
-const now = Date.now();
-const today = Math.floor(now / 86400000);
-const initialDay = 19021;
-const puzzleNumber = (today - initialDay) % secretWords.length;
-const handleStats = puzzleNumber >= 24;
-const yesterdayPuzzleNumber = (today - initialDay + secretWords.length - 1) % secretWords.length;
-const storage = window.localStorage;
+const puzzleNumber = getPuzzleNumber(today);
+let handleStats = puzzleNumber >= 24;
+const yesterdayPuzzleNumber = getPuzzleNumber(today - 1);
+let puzzleKey;
+let storage;
 let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
@@ -102,6 +110,7 @@ const cache = {};
 let secret = "";
 let secretVec = null;
 let similarityStory = null;
+let customMode = false;
 
 function select(word, secretVec) {
     /*
@@ -212,6 +221,15 @@ function solveStory(guesses, puzzleNumber) {
     return `I solved Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
 }
 
+function getQueryParameter(name) {
+    const url = window.location.href
+    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+    const results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2]);
+}
+
 let Semantle = (function() {
     async function getSimilarityStory(secret) {
         const url = "/similarity/" + secret;
@@ -247,16 +265,50 @@ let Semantle = (function() {
     }
 
     async function init() {
-        secret = secretWords[puzzleNumber].toLowerCase();
+        secret = getSecretWord(today).toLowerCase();
+        storage = window.localStorage;
+        puzzleKey = puzzleNumber;
+
+        const urlSecret = getQueryParameter('word');
+        if (urlSecret) {
+            try {
+                const word = atob(urlSecret).replace(/[0-9]+/, '');
+                similarityStory = await getSimilarityStory(word);
+                if (similarityStory == null) {
+                    alert(`It looks like you clicked a custom puzzle link, but
+                           it was somehow broken.  I'll show you today's puzzle instead.`);
+                } else {
+                    secret = word;
+                    customMode = true;
+                    handleStats = false;
+                    // Use sessionStorage to avoid interfering with
+                    // the global game state
+                    storage = window.sessionStorage
+                    puzzleKey = urlSecret;
+                }
+            } catch (e) {
+                // user error -- just show regular semantle
+                console.log("ERR: " + e);
+                similarityStory = await getSimilarityStory(secret);
+            }
+        } else {
+            similarityStory = await getSimilarityStory(secret);
+        }
+
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
         $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
-        $('#yesterday2').innerHTML = yesterday;
+        let pastWeek = [];
+        for (let i = 2; i < 9; i ++) {
+            pastWeek.push(`"${getSecretWord(today - i)}"`);
+        }
+        $('#yesterday2').innerHTML = `"${yesterday}" The words before that were: ${pastWeek.join(", ")}`;
 
-        $('#lower').checked = storage.getItem("lower") == "true";
+        // explicitly use localStorage for this
+        $('#lower').checked = window.localStorage.getItem("lower") == "true";
 
         $('#lower').onchange = (e) => {
-            storage.setItem("lower", "" + $('#lower').checked);
+            window.localStorage.setItem("lower", "" + $('#lower').checked);
         };
 
         try {
@@ -269,22 +321,31 @@ let Semantle = (function() {
         updateLocalTime();
 
         try {
-            similarityStory = await getSimilarityStory(secret);
-            $('#similarity-story').innerHTML = `
+            if (customMode) {
+                $('#similarity-story').innerHTML = `
+You're viewing a <b>custom puzzle</b>. Click <a href="/">here for today's official puzzle</a>. The nearest word has a similarity of
+<b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
+${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
+similarity of ${(similarityStory.rest * 100).toFixed(2)}.
+`;
+
+            } else {
+                $('#similarity-story').innerHTML = `
 Today is puzzle number <b>${puzzleNumber}</b>. The nearest word has a similarity of
 <b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
 ${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
 similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 `;
+            }
         } catch {
             // we can live without this in the event that something is broken
         }
 
         const storagePuzzleNumber = storage.getItem("puzzleNumber");
-        if (storagePuzzleNumber != puzzleNumber) {
+        if (storagePuzzleNumber != puzzleKey) {
             storage.removeItem("guesses");
             storage.removeItem("winState");
-            storage.setItem("puzzleNumber", puzzleNumber);
+            storage.setItem("puzzleNumber", puzzleKey);
         }
 
         document.querySelectorAll(".dialog-close").forEach((el) => {
@@ -292,7 +353,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             el.appendChild($("#x-icon").content.cloneNode(true));
         });
 
-        if (!storage.getItem("readRules")) {
+        if (!window.localStorage.getItem("readRules")) {
             openRules();
         }
 
@@ -328,7 +389,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         });
 
         $("#dark-mode").addEventListener('click', function(event) {
-            storage.setItem("prefersDarkColorScheme", event.target.checked);
+            window.localStorage.setItem("prefersDarkColorScheme", event.target.checked);
             darkModeMql.onchange = null;
             darkMode = event.target.checked;
             toggleDarkMode(darkMode);
@@ -337,7 +398,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         toggleDarkMode(darkMode);
 
-        if (storage.getItem("prefersDarkColorScheme") === null) {
+        if (window.localStorage.getItem("prefersDarkColorScheme") === null) {
             $("#dark-mode").checked = false;
             $("#dark-mode").indeterminate = true;
         }
@@ -375,7 +436,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             if (caps >= 2 && (caps / guesses.length) > 0.4 && !warnedCaps) {
                 warnedCaps = true;
                 $("#lower").checked = confirm("You're entering a lot of words with initial capital letters.  This is probably not what you want to do, and it's probably caused by your phone keyboard ignoring the autocapitalize setting.  \"Nice\" is a city. \"nice\" is an adjective.  Do you want me to downcase your guesses for you?");
-                storage.setItem("lower", "true");
+                window.localStorage.setItem("lower", "true");
             }
 
             $('#guess').value = "";
@@ -445,7 +506,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
     function openRules() {
         document.body.classList.add('dialog-open', 'rules-open');
-        storage.setItem("readRules", true);
+        window.localStorage.setItem("readRules", true);
         $("#rules-close").focus();
     }
 
@@ -499,7 +560,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function checkMedia() {
-        const storagePrefersDarkColorScheme = storage.getItem("prefersDarkColorScheme");
+        const storagePrefersDarkColorScheme = window.localStorage.getItem("prefersDarkColorScheme");
         if (storagePrefersDarkColorScheme === 'true' || storagePrefersDarkColorScheme === 'false') {
             darkMode = storagePrefersDarkColorScheme === 'true';
         } else {
@@ -517,7 +578,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         // If we are in a tab still open from yesterday, we're done here.
         // Don't save anything because we may overwrite today's game!
         let savedPuzzleNumber = storage.getItem("puzzleNumber");
-        if (savedPuzzleNumber != puzzleNumber) { return }
+        if (savedPuzzleNumber != puzzleKey) { return }
 
         storage.setItem("winState", winState);
         storage.setItem("guesses", JSON.stringify(guesses));
@@ -585,10 +646,14 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
         gameOver = true;
         const secretBase64 = btoa(unescape(encodeURIComponent(secret)));
         let response;
+        let share = '';
+        if (!customMode) {
+            share = '<a href="javascript:share();">Share</a> and play again tomorrow. ';
+        }
         if (won) {
-            response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. <a href="javascript:share();">Share</a> and play again tomorrow.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
+            response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. ${share} You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
         } else {
-            response = `<p><b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`;
+            response = `<p><b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  ${share}  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`;
         }
 
         if (handleStats) {
