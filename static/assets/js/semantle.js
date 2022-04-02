@@ -548,7 +548,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                     stats['playStreak'] += 1;
                 }
                 stats['totalPlays'] += 1;
-                if (stats['lastEnd'] != puzzleNumber - 1) {
+                if (stats['lastEnd'] != stats['lastPlay']) {
                     stats['abandons'] += 1;
                 }
                 stats['lastPlay'] = puzzleNumber;
