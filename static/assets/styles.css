@@ -275,6 +275,20 @@ https://www.w3schools.com/howto/howto_js_accordion.asp
   margin-top: 3px;
 }
 
+
+body.dark .accordion {
+  background-color: #444;
+  color: #eee;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+  margin-top: 3px;
+}
+
 .active, .accordion:hover {
   background-color: #ccc;
 }
