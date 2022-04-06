@@ -312,6 +312,21 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             });
         });
 
+        // accordion functionality taken from
+        // https://www.w3schools.com/howto/howto_js_accordion.asp
+        document.querySelectorAll(".accordion").forEach((el) => {
+          el.addEventListener("click", function() {
+            this.classList.toggle("active");
+
+            const panel = this.nextElementSibling;
+            if (panel.style.display === "block") {
+              panel.style.display = "none";
+            } else {
+              panel.style.display = "block";
+            }
+          });
+        });
+
         $("#dark-mode").addEventListener('click', function(event) {
             storage.setItem("prefersDarkColorScheme", event.target.checked);
             darkModeMql.onchange = null;
