@@ -112,135 +112,191 @@
 <footer>
 <h3 id="faq">FAQ</h3>
 
-    <p> Q: Why is the similarity so different from what I was expecting?</p>
-    <p> A: I can think of at least four reasons for this. </p>
-    <ol>
-      <li>Your guess, or the target word, is polysemous, and the
-        meaning that is similar is rarely used. This is why "leather"
-        is far from "patent."  Sometimes one usage is simply more
-        popular (among newspaper reporters, which is the corpus):
-        "display" is more often a verb than a noun, and its vector
-        reflects this.</li>
-      <li id="capitalized-faq">You capitalized your word.  SmartKey and some other
-        keyboards stupidly ignore the autocapitalize settings that I
-        have explicitly set in the HTML, and there does not seem to
-        be anything I can do about this.  I added a checkbox to help
-        you avoid this.</li>
-      <li>Your word and the target word belong to different parts of
-        speech.  Sometimes this matters a lot.  Sometimes it matters
-        only a little.</li>
-      <li>By "similarity", we really mean "used in similar contexts".
-        The principle was articulated by John Rupert Firth, who wrote,
-        "[Y]ou shall know a word by the company it keeps."  So, "love"
-        and "hate" may seem like opposites, but they will often score
-        similarly.  The actual opposite of "love" is probably something
-        like "Arizona Diamondbacks", or "carburetor".</li>
-    </ol>
-    <p> The data set is what it is -- it's not perfect, and I can't
-    afford enough computing power (or a big enough corpus) to try to
-    make a better one.  The technique has limitations.  Sometimes,
-    they'll bite you and you'll lose.</p>
-    <p> Q: Can I play more than once per day?  Can I play old games? </p>
-    <p> A: No.  There are three reasons for this:</p>
+    <button class="accordion" id="capitalized-faq"> Why is the similarity so different from what I was expecting?</button>
+    <div class="panel">
+      <p> I can think of at least four reasons for this. </p>
       <ol>
-        <li>Mindless imitation of that other word guessing game.</li>
-        <li>A game designer I know found a site that let you play as much of the other game as you want.  He immediately binged, and then got bored, and hasn't tweeted about it since.</li>
-        <li>Another friend of mine said that she considered giving up on one day's Semantle, and then realized it would be another 24 hours before she could try again.  So she persevered and got it.</li>
+        <li>Your guess, or the target word, is polysemous, and the
+          meaning that is similar is rarely used. This is why "leather"
+          is far from "patent."  Sometimes one usage is simply more
+          popular (among newspaper reporters, which is the corpus):
+          "display" is more often a verb than a noun, and its vector
+          reflects this.</li>
+        <li>You capitalized your word.  SmartKey and some other
+          keyboards stupidly ignore the autocapitalize settings that I
+          have explicitly set in the HTML, and there does not seem to
+          be anything I can do about this.  I added a checkbox to help
+          you avoid this.</li>
+        <li>Your word and the target word belong to different parts of
+          speech.  Sometimes this matters a lot.  Sometimes it matters
+          only a little.</li>
+        <li>By "similarity", we really mean "used in similar contexts".
+          The principle was articulated by John Rupert Firth, who wrote,
+          "[Y]ou shall know a word by the company it keeps."  So, "love"
+          and "hate" may seem like opposites, but they will often score
+          similarly.  The actual opposite of "love" is probably something
+          like "Arizona Diamondbacks", or "carburetor".</li>
       </ol>
+      <p> The data set is what it is -- it's not perfect, and I can't
+      afford enough computing power (or a big enough corpus) to try to
+      make a better one.  The technique has limitations.  Sometimes,
+      they'll bite you and you'll lose.</p>
+    </div>
 
-    <p> Q: How did you come up with this?</p>
-    <p>
-      A:
-      <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
-      art</a>. I discovered French Toast about 20 years ago, and
-      immediately knew that I had to
-      tell <a href="https://blog.plover.com/">Dominus</a> about it.
-      He replied that in fact he
-      and <a href="https://moonmilk.com/">Ranjit</a> had invented it
-      ten or so years before that, and called it "Plenty Questions".
-      Also, <a href="https://www.datcreativity.com/task">the Divergent
-      Association Task</a> is the opposite of Semantle.
-    </p>
-    <p>
-      But I wasn't thinking of French Toast when I invented this.
-      Instead, I was thinking
-      about <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a>
-      and <a href="https://worldle.teuteuf.fr/">Worldle</a> and about
-      the dimensionality of data sets.  I considered Filmle, a movie
-      guessing game: You say "The Matrix", it says "Keanu Reeves has a
-      bacon number of 3 where bacon is the lead actor in the target
-      film." (and so on for Carrie-Ann Moss, Laurence Fishburne, and
-      Hugo Weaving for actors at corresponding billings).  But I don't
-      care about movies.  Too bad,
-      because <a href="https://www.imdb.com/interfaces/">IMDB</a>
-      actually has exactly the data that you would need to implement
-      it in a really easy form.  Then I remembered word2vec, and here
-      we are.
-    </p>
-    <p> Q: How does this work? </p>
-    <p> A: <a href="https://towardsdatascience.com/word2vec-explained-49c52b4ccb71">Here's an article on word2vec, the underlying technology</a>.
-    <p> Q: What data set did you use? </p>
-    <p> A: <tt>GoogleNews-vectors-negative300.bin</tt> from late 2021</p>
-    <p> Q: Can I see yesterday's word?  </p>
-    <p> A: Yes, "<span id="yesterday2"></span>". </p>
-    <p> Q: What words were closest to yesterday's word? </p>
-    <p> A: <span id="nearbyYesterday"></span>
-    <p> Q: Source code? </p>
-    <p> A: <a href="https://gitlab.com/novalis_dt/semantle">Yes!</a></p>
-    <p> Q: What about the words "and" or "of"?</p>
-    <p> A: No clue why the data set doesn't include them.  Perhaps
+    <button class="accordion"> Can I play more than once per day?  Can I play old games? </button>
+    <div class="panel">
+      <p> No.  There are three reasons for this:</p>
+        <ol>
+          <li>Mindless imitation of that other word guessing game.</li>
+          <li>A game designer I know found a site that let you play as much of the other game as you want.  He immediately binged, and then got bored, and hasn't tweeted about it since.</li>
+          <li>Another friend of mine said that she considered giving up on one day's Semantle, and then realized it would be another 24 hours before she could try again.  So she persevered and got it.</li>
+        </ol>
+    </div>
+
+    <button class="accordion"> How did you come up with this?</button>
+    <div class="panel">
+      <p>
+        <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
+        art</a>. I discovered French Toast about 20 years ago, and
+        immediately knew that I had to
+        tell <a href="https://blog.plover.com/">Dominus</a> about it.
+        He replied that in fact he
+        and <a href="https://moonmilk.com/">Ranjit</a> had invented it
+        ten or so years before that, and called it "Plenty Questions".
+        Also, <a href="https://www.datcreativity.com/task">the Divergent
+        Association Task</a> is the opposite of Semantle.
+      </p>
+      <p>
+        But I wasn't thinking of French Toast when I invented this.
+        Instead, I was thinking
+        about <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a>
+        and <a href="https://worldle.teuteuf.fr/">Worldle</a> and about
+        the dimensionality of data sets.  I considered Filmle, a movie
+        guessing game: You say "The Matrix", it says "Keanu Reeves has a
+        bacon number of 3 where bacon is the lead actor in the target
+        film." (and so on for Carrie-Ann Moss, Laurence Fishburne, and
+        Hugo Weaving for actors at corresponding billings).  But I don't
+        care about movies.  Too bad,
+        because <a href="https://www.imdb.com/interfaces/">IMDB</a>
+        actually has exactly the data that you would need to implement
+        it in a really easy form.  Then I remembered word2vec, and here
+        we are.
+      </p>
+    </div>
+
+    <button class="accordion"> How does this work? </button>
+    <div class="panel">
+      <p> <a href="https://towardsdatascience.com/word2vec-explained-49c52b4ccb71">Here's an article on word2vec, the underlying technology</a>.
+      </p>
+    </div>
+
+    <button class="accordion"> What data set did you use? </button>
+    <div class="panel">
+      <p> <tt>GoogleNews-vectors-negative300.bin</tt> from late 2021</p>
+    </div>
+
+    <button class="accordion"> Can I see yesterday's word?</button>
+    <div class="panel">
+      <p> Yes, "<span id="yesterday2"></span>". </p>
+    </div>
+
+    <button class="accordion"> What words were closest to yesterday's word? </button>
+    <div class="panel">
+      <p> <span id="nearbyYesterday"></span>
+      </p>
+    </div>
+
+    <button class="accordion"> Source code? </button>
+    <div class="panel">
+      <p> <a href="https://gitlab.com/novalis_dt/semantle">Yes!</a></p>
+    </div>
+
+    <button class="accordion"> What about the words "and" or "of"?</button>
+    <div class="panel">
+      <p> No clue why the data set doesn't include them.  Perhaps
       they were just warping the scores of everything else, since they
       are used in so many different contexts?</p>
-    <p> Q: What about UK spelling?</p>
-    <p> A: The data seems to be normalized to US spelling.  Semantle
+    </div>
+
+    <button class="accordion"> What about UK spelling?</button>
+    <div class="panel">
+      <p> The data seems to be normalized to US spelling.  Semantle
       tries to automatically Americanize your spelling (in the cases
       where only the American version is in the data set). Of course,
       they probably couldn't normalize some words, like 'biscuit',
       'lift', or 'pants', so for those you're on your own.</p>
-    <p> Q: Can I sort my guesses chronologically?</p>
-    <p> A: Yes: click on the "#" column header.  Click it again to go
-    reverse-chronological.  It will revert to similarity order when
-    you enter a guess (or when you click the "Similarity" column
-    header).
-    </p>
-    <p> Q: Why do the nearby word ranks go up instead of down? </p>
-    <p> A: I was caught between a rock and a hard place here: on one
+    </div>
+
+    <button class="accordion"> Can I sort my guesses chronologically?</button>
+    <div class="panel">
+      <p> Yes: click on the "#" column header.  Click it again to go
+      reverse-chronological.  It will revert to similarity order when
+      you enter a guess (or when you click the "Similarity" column
+      header).
+      </p>
+    </div>
+
+    <button class="accordion"> Why do the nearby word ranks go up instead of down? </button>
+    <div class="panel">
+      <p> I was caught between a rock and a hard place here: on one
       hand, ranks are usually descending, but on the other hand, here,
       the similarities are ascending. I chose what I thought was the
       least bad option, but I don't think I would have been happy
       either way. </p>
-    <p> Q: How does my performance compare to others?  What is
-    the average number of guesses across all players?</p>
-    <p> A: I don't keep statistics on this. But you are welcome to
-    brag on Twitter, or
-    on <a href="https://www.reddit.com/r/semantle">the subreddit</a>.
-    A leaderboard (a) is not in the spirit of the moment, and (b)
-    likely to lead to unpleasant behavior.</p>
-    <p> Q: Can I play in other languages? </p>
-    <p> A: Yes, <a href="https://swemantle.riddle.nu/">Swedish</a>,
-      <a href="https://semantle-he.herokuapp.com">Hebrew</a>,
-      <a href="http://semantle-es.cgk.cl/">Spanish</a>,
-      <a href="https://contexto.me/">Portuguese</a>,
-      <a href="https://cemantix.herokuapp.com/">French</a>,
-      <a href="http://semantlich.johannesgaetjen.de/">German</a>,
-      <a href="https://semantle.ozanalpay.com/">Turkish</a>,
-      and
-      <a href="https://kcl.somecrap.ru/semantle.today/">Russian</a>,
-      so far.</a> </p>
-    <p> Q: Can I play with a mob?</p>
-    <p> A: <a href="https://www.twitch.tv/intarective">Yes, on Twitch, sometimes.</a></p>
-    <p> Q: How do you pick the word of the day? </p>
-    <p> A: I grabbed a random list of the "most popular" 5,000 words
-    in English, and removed anything capitalized or with hyphens, and
-    the word2vec stopwords ("and", "if").  Then I shuffled it.</p>
-    <p> Q: Hints?</p>
-    <p> A: I'm still trying to figure out the right design, but
-    probably eventually.</p>
-    <p> Q: Can I email you to complain about how words are scored? </p>
-    <p> A: I will ignore those emails.  (Sorry, but I do have a day
+    </div>
+
+    <button class="accordion"> How does my performance compare to others?  What is
+    the average number of guesses across all players?</button>
+    <div class="panel">
+      <p> I don't keep statistics on this. But you are welcome to
+      brag on Twitter, or
+      n <a href="https://www.reddit.com/r/semantle">the subreddit</a>.
+      A leaderboard (a) is not in the spirit of the moment, and (b)
+      likely to lead to unpleasant behavior.</p>
+    </div>
+
+    <button class="accordion"> Can I play in other languages? </button>
+    <div class="panel">
+      <p> Yes, <a href="https://swemantle.riddle.nu/">Swedish</a>,
+        <a href="https://semantle-he.herokuapp.com">Hebrew</a>,
+        <a href="http://semantle-es.cgk.cl/">Spanish</a>,
+        <a href="https://contexto.me/">Portuguese</a>,
+        <a href="https://cemantix.herokuapp.com/">French</a>,
+        <a href="http://semantlich.johannesgaetjen.de/">German</a>,
+        <a href="https://semantle.ozanalpay.com/">Turkish</a>,
+        and
+        <a href="https://kcl.somecrap.ru/semantle.today/">Russian</a>,
+        so far.</a> </p>
+    </div>
+
+    <button class="accordion"> Can I play with a mob?</button>
+    <div class="panel">
+      <p> <a href="https://www.twitch.tv/intarective">Yes, on Twitch, sometimes.</a></p>
+    </div>
+
+    <button class="accordion"> How do you pick the word of the day? </button>
+    <div class="panel">
+      <p> I grabbed a random list of the "most popular" 5,000 words
+      in English, and removed anything capitalized or with hyphens, and
+      the word2vec stopwords ("and", "if").  Then I shuffled it.</p>
+    </div>
+
+    <button class="accordion"> Hints?</button>
+    <div class="panel">
+      <p> I'm still trying to figure out the right design, but
+      probably eventually.</p>
+    </div>
+
+    <button class="accordion"> Can I email you to complain about how words are scored? </button>
+    <div class="panel">
+      <p> I will ignore those emails.  (Sorry, but I do have a day
       job, and it's actually more fun than answering complaint emails).</p>
-    <p> Q: Can I give you money?</p>
-    <p> A: <a href="https://www.againstmalaria.com/Fundraiser.aspx?FundraiserID=8700">Please buy some bed nets instead!</a></p>
+    </div>
+
+    <button class="accordion"> Can I give you money?</button>
+    <div class="panel">
+      <p> <a href="https://www.againstmalaria.com/Fundraiser.aspx?FundraiserID=8700">Please buy some bed nets instead!</a></p>
+    </div>
 
 
     <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
@@ -255,7 +311,7 @@
         </div>
         <div>
           <input type="checkbox" name="lower" value="lower" id="lower" />
-          <label for="lower">Treat all input as lowercase</label>  (<a id="capitalized-link" href="#capitalized-faq">see FAQ</a>)
+          <label for="lower">Treat all input as lowercase</label>  (<a id="capitalized-link" href="#capitalized-faq">see #2 from the answer to this FAQ</a>)
         </div>
       </div>
     </div>
