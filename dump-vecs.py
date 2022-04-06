@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # gensim monkeypatch
 import collections.abc
 
@@ -11,17 +13,15 @@ import tqdm
 
 from more_itertools import chunked
 
-model = word2vec.KeyedVectors.load_word2vec_format(
-    "../GoogleNews-vectors-negative300.bin", binary=True
-)
+vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
+model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True)
+
 
 con = sqlite3.connect("word2vec.db")
 con.execute("PRAGMA journal_mode=WAL")
 cur = con.cursor()
 cur.execute("""create table if not exists word2vec (word text PRIMARY KEY, vec blob)""")
 con.commit()
-
-# import pdb;pdb.set_trace()
 
 
 def bfloat(vec):
@@ -38,8 +38,8 @@ def bfloat(vec):
 
 CHUNK_SIZE = 1111
 con.execute("DELETE FROM word2vec")
-for words in chunked(tqdm.tqdm(model.key_to_index), CHUNK_SIZE):
-    with con:
+with con:
+    for words in chunked(tqdm.tqdm(model.key_to_index), CHUNK_SIZE):
         con.executemany(
             "insert into word2vec values(?,?)",
             ((word, bfloat(model[word])) for word in words),
