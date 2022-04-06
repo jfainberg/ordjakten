@@ -8,9 +8,6 @@ import pickle
 
 import gensim.models.keyedvectors as word2vec
 
-import math
-
-import heapq
 import json
 
 from numpy import dot
@@ -19,17 +16,20 @@ from numpy.linalg import norm
 import re
 import tqdm.contrib.concurrent
 
+from collections import namedtuple
 from hashlib import sha1
+from pathlib import Path
 
 import code, traceback, signal
 
 # check against all words + phrases in model?
 ALL_WORDS = False
 
+vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
+model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True)
 
-model = word2vec.KeyedVectors.load_word2vec_format(
-    "../GoogleNews-vectors-negative300.bin", binary=True
-)
+
+Word = namedtuple("Word", ["name", "vec", "norm"])
 
 
 def make_words():
@@ -48,14 +48,15 @@ def make_words():
             banned_hashes.add(line.strip())
 
     simple_word = re.compile("^[a-z]*$")
-    words = []
+    words = {}
     for word in model.key_to_index:
         if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
             h = sha1()
             h.update(("banned" + word).encode("ascii"))
             hash = h.hexdigest()
             if not hash in banned_hashes:
-                words.append(word)
+                vec = model[word]
+                words[word] = Word(name=word, vec=vec, norm=norm(vec))
 
     return words
 
@@ -75,33 +76,32 @@ def debug(sig, frame):
     message += "".join(traceback.format_stack(frame))
     i.interact(message)
 
-def find_hints(secret, progress=True):
-    if progress:  # works poorly in parellel
-        worditer = tqdm.tqdm(words, leave=False)
-    else:
-        worditer = words
 
-    target_vec = model[secret]
-    target_vec_norm = norm(target_vec)
+def find_hints(secret):
+    """Return hints for the 1,000 closest words"""
+    target_word = words[secret]
+    target_vec = target_word.vec
+    target_vec_norm = target_word.norm
 
     #        syns = synonyms.get(secret) or []
-    nearest = []
+    similarities = []
 
-    for word in worditer:
-        #            if word in syns:
+    for word in words.values():
+        #            if word.name in syns:
         #                continue
-        #            if secret in (synonyms.get(word) or []):
+        #            if secret in (synonyms.get(word.name) or []):
         #                # yow, asymmetrical!
         #                continue
-        #            if word in secret or secret in word:
+        #            if word.name in secret or secret in word.name:
         #                continue
-        vec = model[word]
         # why not model.wv.similarity(wordA, wordB)?
-        similarity = dot(vec, target_vec) / (norm(vec) * target_vec_norm)
-        heapq.heappush(nearest, (similarity, word))
-        if len(nearest) > 1000:
-            heapq.heappop(nearest)
-    nearest.sort()
+        similarity = dot(word.vec, target_vec) / (word.norm * target_vec_norm)
+        similarities.append((float(similarity), word.name))
+
+    similarities.sort()
+
+    # Closest items are at the end of the list, pick the last 1000
+    nearest = similarities[-1000:]
     return secret, nearest
 
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         # may need to limit concurrency for memory reasons
         # XXX bug: wraps all results into a list, e.g. won't write any until the very end
         mapper = tqdm.contrib.concurrent.process_map(
-            partial(find_hints, progress=False),
+            partial(find_hints),
             secrets,
             max_workers=12,
             chunksize=1,
@@ -148,7 +148,6 @@ if __name__ == "__main__":
 
     with open("hints.json", "w+") as hints_file:
         for secret, nearest in mapper:
-            nearest = [(float(score), word) for score, word in nearest]
             hints_file.write(json.dumps({"word": secret, "neighbors": nearest}))
             hints_file.write("\n")
             hints_file.flush()
