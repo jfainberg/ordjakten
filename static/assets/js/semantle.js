@@ -282,8 +282,7 @@ let Semantle = (function() {
                 const word = atob(urlSecret).replace(/[0-9]+/, '');
                 similarityStory = await getSimilarityStory(word);
                 if (similarityStory == null) {
-                    alert(`It looks like you clicked a custom puzzle link, but
-                           it was somehow broken.  I'll show you today's puzzle instead.`);
+                    alert(`It looks like you clicked a custom puzzle link, but it was somehow broken.  I'll show you today's puzzle instead.`);
                 } else {
                     secret = word;
                     customMode = true;

@@ -17,7 +17,7 @@ function init() {
         $('#form').addEventListener('submit', async function(event) {
             event.preventDefault();
             const word = $('#word').value.trim().replace("!", "").replace("*", "");
-            if (check(word) === null) {
+            if ((await check(word)) == null) {
                 $('#response').innerHTML = `Unknown secret word ${word}.`;
                 return;
             }
