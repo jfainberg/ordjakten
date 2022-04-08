@@ -94,7 +94,9 @@ function project_along(v1, v2, t) {
 function share() {
     // We use the stored guesses here, because those are not updated again
     // once you win -- we don't want to include post-win guesses here.
-    const text = solveStory(JSON.parse(storage.getItem("guesses")), puzzleNumber);
+    const text = solveStory(JSON.parse(storage.getItem("guesses")),
+                            puzzleNumber,
+                            parseInt(storage.getItem("winState")));
     const copied = ClipboardJS.copy(text);
 
     if (copied) {
@@ -178,14 +180,18 @@ function updateLocalTime() {
     $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
 }
 
-function solveStory(guesses, puzzleNumber) {
+function solveStory(guesses, puzzleNumber, won) {
     const guess_count = guesses.length;
     if (guess_count == 0) {
-        return `I gave up on Semantle ${puzzleNumber} without even guessing once.`;
+        return `I gave up on Semantle ${puzzleNumber} without even guessing once. https://semantle.novalis.org/`;
     }
 
-    if (guess_count == 1) {
-        return `I got Semantle ${puzzleNumber} on my first guess!`;
+    if (guess_count === 1) {
+        if (won) {
+            return `I got Semantle ${puzzleNumber} on my first guess!  https://semantle.novalis.org/`;
+        } else {
+            return `I gave up on Semantle ${puzzleNumber} after my first guess!  https://semantle.novalis.org/`;
+        }
     }
 
     let describe = function(similarity, percentile) {
@@ -218,7 +224,8 @@ function solveStory(guesses, puzzleNumber) {
     [similarity, old_guess, percentile, guess_number] = penultimate_guess;
     const penultimate_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
 
-    return `I solved Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
+    const solved = won ? "solved" : "gave up on";
+    return `I ${solved} Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
 }
 
 function getQueryParameter(name) {
