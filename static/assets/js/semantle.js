@@ -308,7 +308,7 @@ let Semantle = (function() {
         for (let i = 2; i < 9; i ++) {
             pastWeek.push(`"${getSecretWord(today - i)}"`);
         }
-        $('#yesterday2').innerHTML = `"${yesterday}" The words before that were: ${pastWeek.join(", ")}`;
+        $('#yesterday2').innerHTML = `"${yesterday}". The words before that were: ${pastWeek.join(", ")}`;
 
         // explicitly use localStorage for this
         $('#lower').checked = window.localStorage.getItem("lower") == "true";
