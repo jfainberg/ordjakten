@@ -177,7 +177,9 @@ function updateLocalTime() {
     const now = new Date();
     now.setUTCHours(24, 0, 0, 0);
 
-    $('#localtime').innerHTML = `or ${now.getHours()}:00 your time`;
+    const localtime = `or ${now.getHours()}:00 your time`;
+    $('#localtime').innerHTML = localtime;
+    $('#localtime2').innerHTML = localtime;
 }
 
 function solveStory(guesses, puzzleNumber, won) {
