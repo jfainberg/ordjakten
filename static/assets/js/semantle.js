@@ -338,14 +338,14 @@ async function hint(guesses) {
     try {
         const hint_word = await response.json();
         hints_used += 1;
-        doGuess(hint_word);
+        doGuess(hint_word, true);
     } catch (e) {
         console.log(e);
         alert("Fetching hint failed");
     }
 }
 
-async function doGuess(guess) {
+async function doGuess(guess, is_hint) {
     if (secretVec === null) {
         secretVec = (await getModel(secret)).vec;
     }
@@ -372,7 +372,7 @@ async function doGuess(guess) {
 
         if (handleStats) {
             const stats = getStats();
-            if (!gameOver) {
+            if (!gameOver && !is_hint) {
                 stats['totalGuesses'] += 1;
             }
             storage.setItem('stats', JSON.stringify(stats));
@@ -576,7 +576,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             $('#guess').value = "";
 
-            await doGuess(guess);
+            await doGuess(guess, false);
 
             return false;
         });
