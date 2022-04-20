@@ -218,10 +218,10 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
             out += ` (${percentile}/1000)`;
         }
         return out;
-    }
+    };
 
     const guesses_chrono = guesses.slice();
-    guesses_chrono.sort(function(a, b){return a[3]-b[3]});
+    guesses_chrono.sort(function(a, b){return a[3]-b[3];});
 
     let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
     let first_guess = `My first guess ${describe(similarity, percentile)}.`;
@@ -246,7 +246,7 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
     } else {
         const last_guess = guesses_chrono[guesses_chrono.length - 1];
         [similarity, old_guess, percentile, guess_number] = last_guess;
-        last_guess_msg = `My last guess ${describe(similarity, percentile)}.`
+        last_guess_msg = `My last guess ${describe(similarity, percentile)}.`;
     }
 
     let hints = "";
@@ -698,7 +698,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             return stats;
         } else {
             const stats = JSON.parse(oldStats);
-            stats['hints'] ||= 0;
+            stats['hints'] = stats['hints'] || 0;
             if (stats['lastPlay'] != puzzleNumber) {
                 const onStreak = (stats['lastPlay'] == puzzleNumber - 1);
                 if (onStreak) {
