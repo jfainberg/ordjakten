@@ -204,7 +204,7 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
 
     let guesses_less_hints = guess_count - hints_used;
 
-    if (guesses_less_hints === 1) {
+    if (guess_count === 1) {
         if (won) {
             return `I got Semantle ${puzzleNumber} on my first guess!  https://semantle.novalis.org/`;
         } else {
