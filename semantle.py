@@ -124,6 +124,23 @@ def nearby(word):
         print(e)
         return jsonify(e)
 
+@app.route("/nth_nearby/<string:word>/<int:n>")
+def nth_nearby(word, n):
+    try:
+        con = sqlite3.connect("word2vec.db")
+        cur = con.cursor()
+        res = cur.execute(
+            "SELECT neighbor FROM nearby WHERE word = ? and percentile = ? limit 1",
+            (word, n),
+        )
+        rows = cur.fetchall()
+        con.close()
+        if not rows:
+            return ""
+        return jsonify(rows[0][0])
+    except Exception as e:
+        print(e)
+        return jsonify(e)
 
 @app.route("/nearby_1k/<string:word_b64>")
 def nearby_1k(word_b64):

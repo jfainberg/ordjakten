@@ -34,6 +34,7 @@ let storage;
 let caps = 0;
 let warnedCaps = 0;
 let chrono_forward = 1;
+let hints_used = 0;
 let darkModeMql = window.matchMedia('(prefers-color-scheme: dark)');
 let darkMode = false;
 
@@ -96,7 +97,8 @@ function share() {
     // once you win -- we don't want to include post-win guesses here.
     const text = solveStory(JSON.parse(storage.getItem("guesses")),
                             puzzleNumber,
-                            parseInt(storage.getItem("winState")));
+                            parseInt(storage.getItem("winState")),
+                            hints_used);
     const copied = ClipboardJS.copy(text);
 
     if (copied) {
@@ -182,13 +184,27 @@ function updateLocalTime() {
     $('#localtime2').innerHTML = localtime;
 }
 
-function solveStory(guesses, puzzleNumber, won) {
+function plural(count, word) {
+    if (count === 1) {
+        return word;
+    }
+
+    if (word.match(/(sh|ch|th|s)$/)) {
+        return word + "es";
+    }
+    return word + "s";
+}
+
+
+function solveStory(guesses, puzzleNumber, won, hints_used) {
     const guess_count = guesses.length;
-    if (guess_count == 0) {
+    if (guess_count === 0) {
         return `I gave up on Semantle ${puzzleNumber} without even guessing once. https://semantle.novalis.org/`;
     }
 
-    if (guess_count === 1) {
+    let guesses_less_hints = guess_count - hints_used;
+
+    if (guesses_less_hints === 1) {
         if (won) {
             return `I got Semantle ${puzzleNumber} on my first guess!  https://semantle.novalis.org/`;
         } else {
@@ -222,13 +238,26 @@ function solveStory(guesses, puzzleNumber, won) {
         }
     }
 
-    const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
-    [similarity, old_guess, percentile, guess_number] = penultimate_guess;
-    const penultimate_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+    let last_guess_msg;
+    if (won) {
+        const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
+        [similarity, old_guess, percentile, guess_number] = penultimate_guess;
+        last_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+    } else {
+        const last_guess = guesses_chrono[guesses_chrono.length - 1];
+        [similarity, old_guess, percentile, guess_number] = last_guess;
+        last_guess_msg = `My last guess ${describe(similarity, percentile)}.`
+    }
+
+    let hints = "";
+    if (hints_used > 0)  {
+        hints = ` with ${hints_used} ${plural(hints_used, "hint")}`;
+    }
 
     const solved = won ? "solved" : "gave up on";
-    return `I ${solved} Semantle #${puzzleNumber} in ${guess_count} guesses. ${first_guess}${first_hit}${penultimate_guess_msg} https://semantle.novalis.org/`;
+    return `I ${solved} Semantle #${puzzleNumber} in ${guesses_less_hints} guesses${hints}. ${first_guess}${first_hit}${last_guess_msg} https://semantle.novalis.org/`;
 }
+
 
 function getQueryParameter(name) {
     const url = window.location.href
@@ -257,7 +286,11 @@ let Semantle = (function() {
         const url = "/model2/" + secret + "/" + word.replace(/\ /gi, "_");
         const response = await fetch(url);
         try {
-            return await response.json();
+            const result = await response.json();
+            if (result) {
+                cache[guess] = result;
+            }
+            return result;
         } catch (e) {
             return null;
         }
@@ -272,6 +305,95 @@ let Semantle = (function() {
             return null;
         }
     }
+
+async function hint(guesses) {
+    function hintNumber(guesses) {
+        if (guesses.length === 0) {
+            return 1;
+        }
+        const nearest_top1k = guesses[0][2];
+        if (nearest_top1k === undefined) {
+            return 1;
+        }
+
+        if (nearest_top1k === 999) {
+            for (let i = 1; i < guesses.length; i++) {
+                if (guesses[i][2] !== 999 - i) {
+                    return 999 - i;
+                }
+            }
+            // user has guessed all of the top 1k except the actual word.
+            return -1;
+        }
+
+        return Math.floor((nearest_top1k + 1000) / 2);
+    }
+
+    const n = hintNumber(guesses);
+    if (n < 0) {
+        alert("No more hints are available.");
+    }
+    const url = "/nth_nearby/" + secret + "/" + n;
+    const response = await fetch(url);
+    try {
+        const hint_word = await response.json();
+        hints_used += 1;
+        doGuess(hint_word);
+    } catch (e) {
+        console.log(e);
+        alert("Fetching hint failed");
+    }
+}
+
+async function doGuess(guess) {
+    if (secretVec === null) {
+        secretVec = (await getModel(secret)).vec;
+    }
+
+    const guessData = await getModel(guess);
+    if (!guessData) {
+        $('#error').textContent = `I don't know the word ${guess}.`;
+        return false;
+    }
+
+    let percentile = guessData.percentile;
+
+    const guessVec = guessData.vec;
+
+    let similarity = getCosSim(guessVec, secretVec) * 100.0;
+    if (!guessed.has(guess)) {
+        if (!gameOver) {
+            guessCount += 1;
+        }
+        guessed.add(guess);
+
+        const newEntry = [similarity, guess, percentile, guessCount];
+        guesses.push(newEntry);
+
+        if (handleStats) {
+            const stats = getStats();
+            if (!gameOver) {
+                stats['totalGuesses'] += 1;
+            }
+            storage.setItem('stats', JSON.stringify(stats));
+        }
+    }
+    guesses.sort(function(a, b){return b[0]-a[0]});
+
+    if (!gameOver) {
+        saveGame(-1, -1);
+    }
+
+    chrono_forward = 1;
+
+    latestGuess = guess;
+    updateGuesses();
+
+    firstGuess = false;
+    if (guess.toLowerCase() === secret && !gameOver) {
+        endGame(true, true);
+    }
+}
 
     async function init() {
         secret = getSecretWord(today).toLowerCase();
@@ -419,11 +541,16 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
             }
         });
 
+        $('#hint-btn').addEventListener('click', async function(event) {
+            if (!gameOver) {
+                if (confirm("Are you sure you want a hint?")) {
+                    await hint(guesses);
+                }
+            }
+        });
+
         $('#form').addEventListener('submit', async function(event) {
             event.preventDefault();
-            if (secretVec === null) {
-                secretVec = (await getModel(secret)).vec;
-            }
             $('#guess').focus();
             $('#error').textContent = "";
             let guess = $('#guess').value.trim().replace("!", "").replace("*", "");
@@ -449,56 +576,14 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             $('#guess').value = "";
 
-            const guessData = await getModel(guess);
-            if (!guessData) {
-                $('#error').textContent = `I don't know the word ${guess}.`;
-                return false;
-            }
+            await doGuess(guess);
 
-            let percentile = guessData.percentile;
-
-            const guessVec = guessData.vec;
-
-            cache[guess] = guessData;
-
-            let similarity = getCosSim(guessVec, secretVec) * 100.0;
-            if (!guessed.has(guess)) {
-                if (!gameOver) {
-                    guessCount += 1;
-                }
-                guessed.add(guess);
-
-                const newEntry = [similarity, guess, percentile, guessCount];
-                guesses.push(newEntry);
-
-                if (handleStats) {
-                    const stats = getStats();
-                    if (!gameOver) {
-                        stats['totalGuesses'] += 1;
-                    }
-                    storage.setItem('stats', JSON.stringify(stats));
-                }
-            }
-            guesses.sort(function(a, b){return b[0]-a[0]});
-
-            if (!gameOver) {
-                saveGame(-1, -1);
-            }
-
-            chrono_forward = 1;
-
-            latestGuess = guess;
-            updateGuesses();
-
-            firstGuess = false;
-            if (guess.toLowerCase() === secret && !gameOver) {
-                endGame(true, true);
-            }
             return false;
         });
 
         const winState = storage.getItem("winState");
         if (winState != null) {
+            hints_used = JSON.parse(storage.getItem("hints_used") || "0");
             guesses = JSON.parse(storage.getItem("guesses"));
             for (let guess of guesses) {
                 guessed.add(guess[1]);
@@ -590,6 +675,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         storage.setItem("winState", winState);
         storage.setItem("guesses", JSON.stringify(guesses));
+        storage.setItem("hints_used", JSON.stringify(hints_used));
     }
 
     function getStats() {
@@ -606,11 +692,13 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                 'giveups' : 0,
                 'abandons' : 0,
                 'totalPlays' : 0,
+                'hints' : 0,
             };
             storage.setItem("stats", JSON.stringify(stats));
             return stats;
         } else {
             const stats = JSON.parse(oldStats);
+            stats['hints'] ||= 0;
             if (stats['lastPlay'] != puzzleNumber) {
                 const onStreak = (stats['lastPlay'] == puzzleNumber - 1);
                 if (onStreak) {
@@ -645,6 +733,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
                     stats['winStreak'] = 0;
                     stats['giveups'] += 1;
                 }
+                stats['hints'] += hints_used;
                 storage.setItem("stats", JSON.stringify(stats));
             }
         }
@@ -677,6 +766,7 @@ Stats (since we started recording, on day 23): <br/>
 <tr><th>Did not finish:</th><td>${stats['abandons']}</td></tr>
 <tr><th>Total guesses across all games:</th><td>${stats['totalGuesses']}</td></tr>
 <tr><th>Average guesses across all games:</th><td>${(stats['totalGuesses'] / totalGames).toFixed(2)}</td></tr>
+<tr><th>Total hints used:</th><td>${stats['hints']}</td></tr>
 </table>
 `;
         }
