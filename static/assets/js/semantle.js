@@ -407,6 +407,8 @@ async function doGuess(guess, is_hint) {
                 similarityStory = await getSimilarityStory(word);
                 if (similarityStory == null) {
                     alert(`It looks like you clicked a custom puzzle link, but it was somehow broken.  I'll show you today's puzzle instead.`);
+                    window.location.replace("/");
+                    return;
                 } else {
                     secret = word;
                     customMode = true;
