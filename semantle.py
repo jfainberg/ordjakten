@@ -1,5 +1,6 @@
 from flask import (
     Flask,
+    abort,
     request,
     jsonify,
     send_file,
@@ -144,37 +145,33 @@ def nth_nearby(word, n):
 
 @app.route("/nearby_1k/<string:word_b64>")
 def nearby_1k(word_b64):
-    try:
-        word = base64.b64decode(word_b64).decode("utf-8")
+    word = base64.b64decode(word_b64).decode("utf-8")
 
-        con = sqlite3.connect("word2vec.db")
-        cur = con.cursor()
-        res = cur.execute(
-            "SELECT neighbor, percentile, similarity FROM nearby WHERE word = ? order by percentile desc limit 1000 offset 1 ",
-            (word,),
+    con = sqlite3.connect("word2vec.db")
+    cur = con.cursor()
+    res = cur.execute(
+        "SELECT neighbor, percentile, similarity FROM nearby WHERE word = ? order by percentile desc limit 1000 offset 1 ",
+        (word,),
+    )
+    rows = cur.fetchall()
+    con.close()
+    if len(rows) == 0:
+        abort(404)
+
+    words = [
+        dict(
+            neighbor=row[0],
+            percentile=int(row[1]),
+            similarity="%0.2f" % (100 * row[2]),
         )
-        rows = cur.fetchall()
-        con.close()
-        words = [
-            dict(
-                neighbor=row[0],
-                percentile=int(row[1]),
-                similarity="%0.2f" % (100 * row[2]),
-            )
-            for row in rows
-        ]
-        return render_template("top1k.html", word=word, words=words)
-
-    except Exception as e:
-        import traceback
-
-        traceback.print_exc()
-        return "Oops, error"
+        for row in rows
+    ]
+    return render_template("top1k.html", word=word, words=words)
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return "page not found"
+    return "page not found", 404
 
 
 @app.errorhandler(500)
