@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>Semantle</title>
+    <title>Semantisk</title>
     <script src="assets/js/secretWords.js?2"></script>
     <script src="assets/js/clipboard.js"></script>
     <script src="assets/js/british_spellings.js"></script>
@@ -26,7 +26,7 @@
     <!-- place this script after body so it can reference it -->
     <script src="assets/js/semantle.js"></script>
     <header>
-      <h2>Semantle</h2>
+      <h2>Semantisk</h2>
       <nav id="menu">
         <button id="rules-button" aria-label="Rules">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -44,7 +44,7 @@
       <div class="dialog" id="rules" aria-labelledby="rules-heading" aria-modal="true" role="dialog">
         <button class="dialog-close" id="rules-close" aria-label="Close">&times;</button>
         <div class="dialog-content" id="rules-content">
-          <h3 id="rules-heading">Guess the secret word</h3>
+          <h3 id="rules-heading">Gjett det hemmelige ordet</h3>
           <p>
             Each guess must be a word (or short phrase like San Juan
             or id est). Semantle will tell you how semantically
@@ -93,10 +93,10 @@
     <form id="form" autocorrect="off" autocapitalize="none"
           autocomplete="off">
       <div id="guess-wrapper">
-        <input placeholder="Guess" autocorrect="off" autocapitalize="none"
+        <input placeholder="Gjett" autocorrect="off" autocapitalize="none"
         autocomplete="off"
         type="text" id="guess">
-        <input type="submit" value="Guess" id="guess-btn">
+        <input type="submit" value="Gjett" id="guess-btn">
       </div>
     </form>
     <div id="response" aria-live="assertive"></div>
@@ -108,21 +108,21 @@
   
 
   <input type="button" value="Hint" id="hint-btn">
-  <input type="button" value="Give up" id="give-up-btn">
+  <input type="button" value="Jeg gir opp" id="give-up-btn">
 
 <footer>
 <h3 id="faq">FAQ</h3>
-    <button class="accordion"> Can I see yesterday's word?</button>
+    <button class="accordion"> Kan jeg se gårsdagens ord?</button>
     <div class="panel">
-      <p> Yes, <span id="yesterday2"></span>. </p>
+      <p> Jepp, <span id="yesterday2"></span>. </p>
     </div>
 
-    <button class="accordion"> When does the new word come out?</button>
+    <button class="accordion"> Når kommer et nytt ord ut?</button>
     <div class="panel">
-      <p> Midnight UTC <span id="localtime2"></span> </p>
+      <p> Midnatt <span id="localtime2"></span> </p>
     </div>
 
-    <button class="accordion" id="capitalized-faq"> Why is the similarity so different from what I was expecting?</button>
+    <button class="accordion" id="capitalized-faq"> Likheten stemmer ikke med hva jeg forventer?</button>
     <div class="panel">
       <p> I can think of at least four reasons for this. </p>
       <ol>
@@ -153,179 +153,69 @@
       they'll bite you and you'll lose.</p>
     </div>
 
-    <button class="accordion"> Can I play more than once per day?  Can I play old games? </button>
+    <button class="accordion"> Hvordan funker dette? </button>
     <div class="panel">
-      <p>No old games, and no random games.  There are three reasons
-      for this:</p>
-        <ol>
-          <li>Mindless imitation of that other word guessing game.</li>
-          <li>A game designer I know found a site that let you play as much of the other game as you want.  He immediately binged, and then got bored, and hasn't tweeted about it since.</li>
-          <li>Another friend of mine said that she considered giving up on one day's Semantle, and then realized it would be another 24 hours before she could try again.  So she persevered and got it.</li>
-        </ol>
-      <p>But you can <a href="/make">send your friend a custom
-      game</a>.  And maybe your friend will send you one back.  Maybe
-      the word will be flirtatious.  Maybe you will conduct an entire
-      romance over Semantle.  I met my wife
-      through <a href="https://www.looneylabs.com/games/zendo">Zendo</a>,
-      so it's not impossible.  Just remember
-      the <a href="https://www.poetryfoundation.org/poems/49238/the-quiet-world">word
-      limit</a>.</p>
-    </div>
-
-    <button class="accordion"> How did you come up with this?</button>
-    <div class="panel">
-      <p>
-        <a href="http://www.topped-with-meat.com/connector/frenchtoast.html">Prior
-        art</a>. I discovered French Toast about 20 years ago, and
-        immediately knew that I had to
-        tell <a href="https://blog.plover.com/">Dominus</a> about it.
-        He replied that in fact he
-        and <a href="https://moonmilk.com/">Ranjit</a> had invented it
-        ten or so years before that, and called it "Plenty Questions".
-        Also, <a href="https://www.datcreativity.com/task">the Divergent
-        Association Task</a> is the opposite of Semantle.
-      </p>
-      <p>
-        But I wasn't thinking of French Toast when I invented this.
-        Instead, I was thinking
-        about <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a>
-        and <a href="https://worldle.teuteuf.fr/">Worldle</a> and about
-        the dimensionality of data sets.  I considered Filmle, a movie
-        guessing game: You say "The Matrix", it says "Keanu Reeves has a
-        bacon number of 3 where bacon is the lead actor in the target
-        film." (and so on for Carrie-Ann Moss, Laurence Fishburne, and
-        Hugo Weaving for actors at corresponding billings).  But I don't
-        care about movies.  Too bad,
-        because <a href="https://www.imdb.com/interfaces/">IMDB</a>
-        actually has exactly the data that you would need to implement
-        it in a really easy form.  Then I remembered word2vec, and here
-        we are.
+      <p> <a href="https://towardsdatascience.com/word2vec-explained-49c52b4ccb71">Se denne artikkelen om Word2Vec.</a>.
       </p>
     </div>
 
-    <button class="accordion"> How does this work? </button>
-    <div class="panel">
-      <p> <a href="https://towardsdatascience.com/word2vec-explained-49c52b4ccb71">Here's an article on word2vec, the underlying technology</a>.
-      </p>
-    </div>
-
-    <button class="accordion"> What data set did you use? </button>
+    <button class="accordion"> Hvilke data brukte du? </button>
     <div class="panel">
       <p> <tt>GoogleNews-vectors-negative300.bin</tt> from late 2021</p>
     </div>
 
-    <button class="accordion"> What words were closest to yesterday's word? </button>
+    <button class="accordion"> Hvilke ord var nærest gårsdagens ord? </button>
     <div class="panel">
       <p> <span id="nearbyYesterday"></span>
       </p>
     </div>
 
-    <button class="accordion"> What does ???? mean? </button>
+    <button class="accordion"> Hva betyr ???? ? </button>
     <div class="panel">
-      Unusual word found! This word is not in the list of "normal"
-      words that we use for the top-1000 list, but it is still
-      similar! (Is it maybe capitalized?)
+      Du fant et uvanlig ord! Dette er et ord som ikke er i listen
+      over "normale" ord vi bruker for topp-1000 lista.
     </div>
 
-    <button class="accordion"> Source code? </button>
+    <button class="accordion"> Kildekode? </button>
     <div class="panel">
-      <p> <a href="https://gitlab.com/novalis_dt/semantle">Yes!</a></p>
+      <p> <a href="https://github.com/jfainberg/semantle">Jepp</a></p>
     </div>
 
-    <button class="accordion"> What about the words "and" or "of"?</button>
+    <button class="accordion"> Kva med nynorsk?</button>
     <div class="panel">
-      <p> No clue why the data set doesn't include them.  Perhaps
-      they were just warping the scores of everything else, since they
-      are used in so many different contexts?</p>
-    </div>
-
-    <button class="accordion"> What about UK spelling?</button>
-    <div class="panel">
-      <p> The data seems to be normalized to US spelling.  Semantle
-      tries to automatically Americanize your spelling (in the cases
-      where only the American version is in the data set). Of course,
-      they probably couldn't normalize some words, like 'biscuit',
-      'lift', or 'pants', so for those you're on your own.</p>
-    </div>
-
-    <button class="accordion"> Can I sort my guesses chronologically?</button>
-    <div class="panel">
-      <p> Yes: click on the "#" column header.  Click it again to go
-      reverse-chronological.  It will revert to similarity order when
-      you enter a guess (or when you click the "Similarity" column
-      header).
+      <p> Kanskje ein gong seinare.
       </p>
     </div>
 
-    <button class="accordion"> Why do the nearby word ranks go up instead of down? </button>
+    <button class="accordion"> Kan jeg spille på andre språk? </button>
     <div class="panel">
-      <p> I was caught between a rock and a hard place here: on one
-      hand, ranks are usually descending, but on the other hand, here,
-      the similarities are ascending. I chose what I thought was the
-      least bad option, but I don't think I would have been happy
-      either way. </p>
+      <p> Oui, <a href="https://semantle.novalis.org/">engelsk (originalen)</a>,
+        <a href="https://swemantle.riddle.nu/">svensk</a>,
+        <a href="https://semantle-he.herokuapp.com">hebraisk</a>,
+        <a href="http://semantle-es.cgk.cl/">spansk</a>,
+        <a href="https://contexto.me/">portugisisk</a>,
+        <a href="https://cemantix.herokuapp.com/">fransk</a>,
+        <a href="http://semantlich.johannesgaetjen.de/">tysk</a> (or <a href="https://semantel.tarphos.de/">tysk 2</a>),
+        <a href="https://semantle.ozanalpay.com/">tyrkisk</a>,
+        <a href="https://kcl.somecrap.ru/semantle.today/">russisk</a>,
+        <a href="https://semantle.be/">nederlandsk</a>
+        og
+        <a href="https://semantle-ko.newsjel.ly/">koreansk</a>. </p>
     </div>
 
-    <button class="accordion"> How does my performance compare to others?  What is
-    the average number of guesses across all players?</button>
-    <div class="panel">
-      <p> I don't keep statistics on this. But you are welcome to
-      brag on Twitter, or
-      n <a href="https://www.reddit.com/r/semantle">the subreddit</a>.
-      A leaderboard (a) is not in the spirit of the moment, and (b)
-      likely to lead to unpleasant behavior.</p>
-    </div>
-
-    <button class="accordion"> Can I play in other languages? </button>
-    <div class="panel">
-      <p> Yes, <a href="https://swemantle.riddle.nu/">Swedish</a>,
-        <a href="https://semantle-he.herokuapp.com">Hebrew</a>,
-        <a href="http://semantle-es.cgk.cl/">Spanish</a>,
-        <a href="https://contexto.me/">Portuguese</a>,
-        <a href="https://cemantix.herokuapp.com/">French</a>,
-        <a href="http://semantlich.johannesgaetjen.de/">German</a> (or <a href="https://semantel.tarphos.de/">a different German one</a>),
-        <a href="https://semantle.ozanalpay.com/">Turkish</a>,
-        <a href="https://kcl.somecrap.ru/semantle.today/">Russian</a>,
-        <a href="https://semantle.be/">Dutch</a>
-        and
-        <a href="https://semantle-ko.newsjel.ly/">Korean</a>
-        so far. </p>
-    </div>
-
-    <button class="accordion"> Can I play with a mob?</button>
-    <div class="panel">
-      <p> <a href="https://www.twitch.tv/intarective">Yes, on Twitch, sometimes.</a></p>
-    </div>
-
-    <button class="accordion"> How do you pick the word of the day? </button>
+    <button class="accordion"> Hvordan velges dagens ord? </button>
     <div class="panel">
       <p> I grabbed a random list of the "most popular" 5,000 words
       in English, and removed anything capitalized or with hyphens, and
       the word2vec stopwords ("and", "if").  Then I shuffled it.</p>
     </div>
 
-    <button class="accordion"> Hints?</button>
+    <button class="accordion"> Kan jeg maile deg og klage? </button>
     <div class="panel">
-      <p> Yes: click the "Hint" button at the bottom of your list of
-        guesses (to the left of "Give up"). You'll get a word that's
-        slightly better than one of your best guesses (unless you've
-        guessed all of the nearest thousand except the target word).</p>
+      <p> Haha. Nei.</p>
     </div>
 
-    <button class="accordion"> Can I email you to complain about how words are scored? </button>
-    <div class="panel">
-      <p> <a href="https://www.patreon.com/semantle">Yes, but only at
-      the Adverb patreon tier</a>. (Sorry, but I do have a day job,
-      and it's actually more fun than answering complaint emails).</p>
-    </div>
-
-    <button class="accordion"> Can I give you money?</button>
-    <div class="panel">
-      <p> <a href="https://www.patreon.com/semantle">Here's my Patreon</a>. I would rather that you <a href="https://www.againstmalaria.com/Fundraiser.aspx?FundraiserID=8700">donate to the Against Malaria Foundation</a>, but it's your choice.</p>
-    </div>
-
-
-    <div>Made by <a href="mailto:novalis@novalis.org">David Turner</a>.  Word2vec data from Google.</div>
+    <div>Basert på <a href="mailto:novalis@novalis.org">David Turner's</a> <a href="">Semantle</a>, norske versjon av <a href="http://jfainberg.github.io">meg</a>, med word embeddings fra <a href="">TODO</a>.</div>
   </footer>
   <div class="dialog-underlay" id="settings-underlay">
     <div class="dialog" id="settings" aria-labelledby="settings-heading" aria-modal="true" role="dialog">

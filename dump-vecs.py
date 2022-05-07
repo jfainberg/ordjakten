@@ -13,8 +13,10 @@ import tqdm
 
 from more_itertools import chunked
 
-vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
-model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True)
+# vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
+# vectors = "nor-vectors.bin"
+vectors = "nor-vectors-avis.bin"
+model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True, unicode_errors="replace")
 
 
 con = sqlite3.connect("word2vec.db")
@@ -39,8 +41,8 @@ def bfloat(vec):
 CHUNK_SIZE = 1111
 con.execute("DELETE FROM word2vec")
 with con:
-    for words in chunked(tqdm.tqdm(model.key_to_index), CHUNK_SIZE):
+    for words in chunked(tqdm.tqdm(model.index_to_key[:200000]), CHUNK_SIZE):
         con.executemany(
             "insert into word2vec values(?,?)",
-            ((word, bfloat(model[word])) for word in words),
+            ((word, model[word].tobytes()) for word in words),
         )

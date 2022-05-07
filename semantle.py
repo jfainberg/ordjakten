@@ -53,7 +53,7 @@ def word(word):
         if not res:
             return ""
         res = res[0]
-        return jsonify(list(struct.unpack("300f", expand_bfloat(res))))
+        return jsonify(list(struct.unpack("100f", expand_bfloat(res))))
     except Exception as e:
         print(e)
         return jsonify(e)
@@ -74,7 +74,7 @@ def get_model2(secret, word):
     if not row:
         return ""
     vec = row[0]
-    result = {"vec": list(struct.unpack("300f", expand_bfloat(vec)))}
+    result = {"vec": list(struct.unpack("100f", expand_bfloat(vec)))}
     if row[1]:
         result["percentile"] = row[1]
     return jsonify(result)
@@ -188,4 +188,4 @@ def add_header(response):
 if __name__ == "__main__":
     import sqlite3
 
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=8080)

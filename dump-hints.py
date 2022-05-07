@@ -25,8 +25,11 @@ import code, traceback, signal
 # check against all words + phrases in model?
 ALL_WORDS = False
 
-vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
-model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True)
+# vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
+# vectors = "nor-vectors.bin"
+vectors = "nor-vectors-avis.bin"
+model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True, unicode_errors="replace")
+# model = gensim.models.fasttext.load_facebook_vectors("parameters.bin")
 
 
 Word = namedtuple("Word", ["name", "vec", "norm"])
@@ -34,7 +37,8 @@ Word = namedtuple("Word", ["name", "vec", "norm"])
 
 def make_words():
     allowable_words = set()
-    with open("words_alpha.txt") as walpha:
+    # with open("words_alpha.txt") as walpha:
+    with open("words-104.txt") as walpha:
         for line in walpha.readlines():
             allowable_words.add(line.strip())
 
@@ -47,12 +51,12 @@ def make_words():
         for line in f:
             banned_hashes.add(line.strip())
 
-    simple_word = re.compile("^[a-z]*$")
+    simple_word = re.compile("^[a-zæøå]*$")
     words = {}
     for word in model.key_to_index:
         if ALL_WORDS or (simple_word.match(word) and word in allowable_words):
             h = sha1()
-            h.update(("banned" + word).encode("ascii"))
+            h.update(("banned" + word).encode("utf-8"))
             hash = h.hexdigest()
             if not hash in banned_hashes:
                 vec = model[word]
@@ -137,7 +141,7 @@ if __name__ == "__main__":
         mapper = tqdm.contrib.concurrent.process_map(
             partial(find_hints),
             secrets,
-            max_workers=12,
+            max_workers=4,
             chunksize=1,
             total=len(secrets),
         )

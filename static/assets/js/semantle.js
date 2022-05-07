@@ -13,7 +13,7 @@ const now = Date.now();
 const today = Math.floor(now / 86400000);
 const initialDay = 19021;
 function getPuzzleNumber(day) {
-    return (day - initialDay) % secretWords.length;
+	    return (day - initialDay) % secretWords.length;
 }
 function getSecretWord(day) {
     return secretWords[getPuzzleNumber(day)];
@@ -138,15 +138,15 @@ function select(word, secretVec) {
 }
 
 function guessRow(similarity, oldGuess, percentile, guessNumber, guess) {
-    let percentileText = "(cold)";
+    let percentileText = "(kaldt)";
     let progress = "";
     let cls = "";
     if (similarity >= similarityStory.rest * 100) {
-        percentileText = '<span class="weirdWord">????<span class="tooltiptext">Unusual word found!  This word is not in the list of &quot;normal&quot; words that we use for the top-1000 list, but it is still similar! (Is it maybe capitalized?)</span></span>';
+        percentileText = '<span class="weirdWord">????<span class="tooltiptext">Du fant et uvanlig ord!  Dette ordet er ikke i listen over &quot;normale&quot; ord som vi bruker i topp-1000 lista, men det likner fortsatt løsningsordet!</span></span>';
     }
     if (percentile) {
         if (percentile == 1000) {
-            percentileText = "FOUND!";
+            percentileText = "DU FANT!";
         } else {
             cls = "close";
             percentileText = `<span class="percentile">${percentile}/1000</span>&nbsp;`;
@@ -199,21 +199,21 @@ function plural(count, word) {
 function solveStory(guesses, puzzleNumber, won, hints_used) {
     const guess_count = guesses.length;
     if (guess_count === 0) {
-        return `I gave up on Semantle ${puzzleNumber} without even guessing once. https://semantle.novalis.org/`;
+        return `Jeg gav opp med Semantisk spill ${puzzleNumber} uten å gjette en eneste gang. https://semantisk.herokuapp.com/`;
     }
 
     let guesses_less_hints = guess_count - hints_used;
 
     if (guess_count === 1) {
         if (won) {
-            return `I got Semantle ${puzzleNumber} on my first guess!  https://semantle.novalis.org/`;
+            return `Jeg klarte Semantisk spill ${puzzleNumber} på første forsøk!  https://semantisk.herokuapp.com/`;
         } else {
-            return `I gave up on Semantle ${puzzleNumber} after my first guess!  https://semantle.novalis.org/`;
+            return `Jeg gav opp med Semantisk spill ${puzzleNumber} etter ett eneste forsøk!  https://semantisk.herokuapp.com/`;
         }
     }
 
     let describe = function(similarity, percentile) {
-        let out = `had a similarity of ${similarity.toFixed(2)}`;
+        let out = `hadde en liket på ${similarity.toFixed(2)}`;
         if (percentile) {
             out += ` (${percentile}/1000)`;
         }
@@ -224,7 +224,7 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
     guesses_chrono.sort(function(a, b){return a[3]-b[3];});
 
     let [similarity, old_guess, percentile, guess_number] = guesses_chrono[0];
-    let first_guess = `My first guess ${describe(similarity, percentile)}.`;
+    let first_guess = `Mitt første forsøk ${describe(similarity, percentile)}.`;
     let first_guess_in_top = !!percentile;
 
     let first_hit = '';
@@ -255,7 +255,7 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
     }
 
     const solved = won ? "solved" : "gave up on";
-    return `I ${solved} Semantle #${puzzleNumber} in ${guesses_less_hints} guesses${hints}. ${first_guess}${first_hit}${last_guess_msg} https://semantle.novalis.org/`;
+    return `Jeg ${solved} Semantisk #${puzzleNumber} på ${guesses_less_hints} forsøk${hints}. ${first_guess}${first_hit}${last_guess_msg} https://semantisk.herokuapp.com/`;
 }
 
 
@@ -331,7 +331,7 @@ async function hint(guesses) {
 
     const n = hintNumber(guesses);
     if (n < 0) {
-        alert("No more hints are available.");
+        alert("Det finnes ikke flere hint.");
     }
     const url = "/nth_nearby/" + secret + "/" + n;
     const response = await fetch(url);
@@ -352,7 +352,7 @@ async function doGuess(guess, is_hint) {
 
     const guessData = await getModel(guess);
     if (!guessData) {
-        $('#error').textContent = `I don't know the word ${guess}.`;
+        $('#error').textContent = `Jeg kjenner ikke til ordet ${guess}.`;
         return false;
     }
 
@@ -429,12 +429,12 @@ async function doGuess(guess, is_hint) {
 
         const yesterday = secretWords[yesterdayPuzzleNumber].toLowerCase();
 
-        $('#yesterday').innerHTML = `Yesterday's word was <b>"${yesterday}"</b>.`;
+        $('#yesterday').innerHTML = `Gårsdagens ord var <b>"${yesterday}"</b>.`;
         let pastWeek = [];
         for (let i = 2; i < 9; i ++) {
             pastWeek.push(`"${getSecretWord(today - i)}"`);
         }
-        $('#yesterday2').innerHTML = `"${yesterday}". The words before that were: ${pastWeek.join(", ")}`;
+        $('#yesterday2').innerHTML = `"${yesterday}". Ordene før det var: ${pastWeek.join(", ")}`;
 
         // explicitly use localStorage for this
         $('#lower').checked = window.localStorage.getItem("lower") == "true";
@@ -448,7 +448,7 @@ async function doGuess(guess, is_hint) {
             const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
             $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closeness. <a href="nearby_1k/${secretBase64}">More?</a>`;
         } catch (e) {
-            $('#nearbyYesterday').innerHTML = `Coming soon!`;
+            $('#nearbyYesterday').innerHTML = `Kommer snart!`;
         }
         updateLocalTime();
 
@@ -463,10 +463,10 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
             } else {
                 $('#similarity-story').innerHTML = `
-Today is puzzle number <b>${puzzleNumber}</b>. The nearest word has a similarity of
-<b>${(similarityStory.top * 100).toFixed(2)}</b>, the tenth-nearest has a similarity of
-${(similarityStory.top10 * 100).toFixed(2)} and the one thousandth nearest word has a
-similarity of ${(similarityStory.rest * 100).toFixed(2)}.
+Dagens spill er nummer <b>${puzzleNumber}</b>. Det nærmeste ordet til løsningen har en liket på
+<b>${(similarityStory.top * 100).toFixed(2)}</b>, det tiende nærmeste har likhet  
+${(similarityStory.top10 * 100).toFixed(2)} og det tusendte nærmeste ordet har likhet 
+${(similarityStory.rest * 100).toFixed(2)}.
 `;
             }
         } catch {
@@ -537,7 +537,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         $('#give-up-btn').addEventListener('click', function(event) {
             if (!gameOver) {
-                if (confirm("Are you sure you want to give up?")) {
+                if (confirm("Er du sikker på at du vil gi opp?")) {
                     endGame(false, true);
                 }
             }
@@ -545,7 +545,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
 
         $('#hint-btn').addEventListener('click', async function(event) {
             if (!gameOver) {
-                if (confirm("Are you sure you want a hint?")) {
+                if (confirm("Er du sikker på at du vil ha et hint?")) {
                     await hint(guesses);
                 }
             }
@@ -611,7 +611,7 @@ similarity of ${(similarityStory.rest * 100).toFixed(2)}.
     }
 
     function updateGuesses() {
-        let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Guess</th><th id="similarityOrder">Similarity</th><th>Getting close?</th></tr>`;
+		let inner = `<tr><th id="chronoOrder">#</th><th id="alphaOrder">Gjetning</th><th id="similarityOrder">Likhet</th><th>Nærme?</th></tr>`;
         /* This is dumb: first we find the most-recent word, and put
            it at the top.  Then we do the rest. */
         for (let entry of guesses) {
