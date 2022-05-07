@@ -20,3 +20,4 @@ Werkzeug==2.0.2
 black==22.1.0
 more-itertools
 typer
+gunicorn
