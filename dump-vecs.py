@@ -1,22 +1,20 @@
-from pathlib import Path
-
-# gensim monkeypatch
-import collections.abc
+import collections.abc  # gensim monkeypatch
 
 collections.Mapping = collections.abc.Mapping
 
+import sqlite3
+
 import gensim.models.keyedvectors as word2vec
 import numpy as np
-
-import sqlite3
 import tqdm
-
 from more_itertools import chunked
 
 # vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
 # vectors = "nor-vectors.bin"
 vectors = "nor-vectors-avis.bin"
-model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True, unicode_errors="replace")
+model = word2vec.KeyedVectors.load_word2vec_format(
+    vectors, binary=True, unicode_errors="replace"
+)
 
 
 con = sqlite3.connect("word2vec.db")

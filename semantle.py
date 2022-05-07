@@ -1,16 +1,9 @@
-from flask import (
-    Flask,
-    abort,
-    request,
-    jsonify,
-    send_file,
-    send_from_directory,
-    render_template,
-)
-import struct
-import sqlite3
 import base64
+import sqlite3
+import struct
 from functools import lru_cache
+
+from flask import Flask, abort, jsonify, render_template, send_file, send_from_directory
 
 app = Flask(__name__)
 
@@ -19,9 +12,11 @@ app = Flask(__name__)
 def send_index():
     return send_file("static/index.html")
 
+
 @app.route("/make")
 def send_make():
     return send_file("static/make.html")
+
 
 @app.route("/favicon.ico")
 def send_favicon():
@@ -63,7 +58,7 @@ def word(word):
 def get_model2(secret, word):
     con = sqlite3.connect("word2vec.db")
     cur = con.cursor()
-    res = cur.execute(
+    cur.execute(
         "SELECT vec, percentile FROM word2vec left outer join nearby on nearby.word=? and nearby.neighbor=? WHERE word2vec.word = ?",
         (secret, word, word),
     )
@@ -112,7 +107,7 @@ def nearby(word):
     try:
         con = sqlite3.connect("word2vec.db")
         cur = con.cursor()
-        res = cur.execute(
+        cur.execute(
             "SELECT neighbor FROM nearby WHERE word = ? order by percentile desc limit 10 offset 1",
             (word,),
         )
@@ -125,12 +120,13 @@ def nearby(word):
         print(e)
         return jsonify(e)
 
+
 @app.route("/nth_nearby/<string:word>/<int:n>")
 def nth_nearby(word, n):
     try:
         con = sqlite3.connect("word2vec.db")
         cur = con.cursor()
-        res = cur.execute(
+        cur.execute(
             "SELECT neighbor FROM nearby WHERE word = ? and percentile = ? limit 1",
             (word, n),
         )
@@ -143,13 +139,14 @@ def nth_nearby(word, n):
         print(e)
         return jsonify(e)
 
+
 @app.route("/nearby_1k/<string:word_b64>")
 def nearby_1k(word_b64):
     word = base64.b64decode(word_b64).decode("utf-8")
 
     con = sqlite3.connect("word2vec.db")
     cur = con.cursor()
-    res = cur.execute(
+    cur.execute(
         "SELECT neighbor, percentile, similarity FROM nearby WHERE word = ? order by percentile desc limit 1000 offset 1 ",
         (word,),
     )
@@ -186,6 +183,4 @@ def add_header(response):
 
 
 if __name__ == "__main__":
-    import sqlite3
-
     app.run(host="0.0.0.0", port=8080)

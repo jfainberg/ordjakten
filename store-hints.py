@@ -1,16 +1,14 @@
+import pickle
 import sqlite3
 
-import pickle
-
-from more_itertools import chunked
 import tqdm
 
 con = sqlite3.connect("word2vec.db")
 con.execute("PRAGMA journal_mode=WAL")
 cur = con.cursor()
 cur.execute(
-    """create table if not exists nearby 
-    (word text, neighbor text, similarity float, percentile integer, 
+    """create table if not exists nearby
+    (word text, neighbor text, similarity float, percentile integer,
     PRIMARY KEY (word, neighbor))"""
 )
 

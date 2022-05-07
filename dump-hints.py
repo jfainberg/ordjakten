@@ -3,24 +3,20 @@ import collections.abc
 
 collections.Mapping = collections.abc.Mapping
 
-from functools import partial
+import code
+import json
 import pickle
+import re
+import signal
+import traceback
+from collections import namedtuple
+from functools import partial
+from hashlib import sha1
 
 import gensim.models.keyedvectors as word2vec
-
-import json
-
+import tqdm.contrib.concurrent
 from numpy import dot
 from numpy.linalg import norm
-
-import re
-import tqdm.contrib.concurrent
-
-from collections import namedtuple
-from hashlib import sha1
-from pathlib import Path
-
-import code, traceback, signal
 
 # check against all words + phrases in model?
 ALL_WORDS = False
@@ -28,7 +24,9 @@ ALL_WORDS = False
 # vectors = str(Path(__file__).parent / "GoogleNews-vectors-negative300.bin")
 # vectors = "nor-vectors.bin"
 vectors = "nor-vectors-avis.bin"
-model = word2vec.KeyedVectors.load_word2vec_format(vectors, binary=True, unicode_errors="replace")
+model = word2vec.KeyedVectors.load_word2vec_format(
+    vectors, binary=True, unicode_errors="replace"
+)
 # model = gensim.models.fasttext.load_facebook_vectors("parameters.bin")
 
 
@@ -58,7 +56,7 @@ def make_words():
             h = sha1()
             h.update(("banned" + word).encode("utf-8"))
             hash = h.hexdigest()
-            if not hash in banned_hashes:
+            if hash not in banned_hashes:
                 vec = model[word]
                 words[word] = Word(name=word, vec=vec, norm=norm(vec))
 
@@ -130,7 +128,7 @@ if __name__ == "__main__":
     with open("static/assets/js/secretWords.js") as f:
         for line in f.readlines():
             line = line.strip()
-            if not '"' in line:
+            if '"' not in line:
                 continue
             secrets.append(line.strip('",'))
 
