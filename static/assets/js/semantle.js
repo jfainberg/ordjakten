@@ -180,7 +180,6 @@ function updateLocalTime() {
     now.setUTCHours(24, 0, 0, 0);
 
     const localtime = `or ${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")} your time`;
-    $('#localtime').innerHTML = localtime;
     $('#localtime2').innerHTML = localtime;
 }
 
