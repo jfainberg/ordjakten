@@ -179,7 +179,7 @@ function updateLocalTime() {
     const now = new Date();
     now.setUTCHours(24, 0, 0, 0);
 
-    const localtime = `or ${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")} your time`;
+    const localtime = `eller ${now.getHours()}:${now.getMinutes().toString().padStart(2, "0")} din tid`;
     $('#localtime2').innerHTML = localtime;
 }
 
@@ -445,7 +445,7 @@ async function doGuess(guess, is_hint) {
         try {
             const yesterdayNearby = await getNearby(yesterday);
             const secretBase64 = btoa(unescape(encodeURIComponent(yesterday)));
-            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}, in descending order of closeness. <a href="nearby_1k/${secretBase64}">More?</a>`;
+            $('#nearbyYesterday').innerHTML = `${yesterdayNearby.join(", ")}. <a href="nearby_1k/${secretBase64}">Se fler.</a>`;
         } catch (e) {
             $('#nearbyYesterday').innerHTML = `Kommer snart!`;
         }

@@ -22,7 +22,7 @@ function init() {
             $("#top1k").innerHTML = "";
             const nearby = await top1k(word);
             if (nearby == null) {
-                $('#response').innerHTML = `Unknown secret word ${word}.`;
+                $('#response').innerHTML = `Ukjent hemmelig ord ${word}.`;
                 return;
             }
             let nearby_inside = nearby.replace(/.*<body>/s, "");
