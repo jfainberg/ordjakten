@@ -79,7 +79,7 @@ secretWords = [
 "søtt",
 "sivil",
 "barndom",
-"medikasjon",
+"medisinering",
 "entusiasme",
 "autonomi",
 "koloni",
