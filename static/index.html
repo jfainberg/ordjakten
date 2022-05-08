@@ -120,7 +120,7 @@
 
     <button class="accordion"> Hvilke data brukte du? </button>
     <div class="panel">
-      <p> <tt>GoogleNews-vectors-negative300.bin</tt> from late 2021</p>
+	    <p> Skipgram embeddings basert på Norsk Aviskorpus fra <a href="http://vectors.nlpl.eu/repository/">NLPL word embeddings repository</a> (ID 104).</p>
     </div>
 
     <button class="accordion"> Hvilke ord var nærest gårsdagens ord? </button>
@@ -162,14 +162,7 @@
         <a href="https://semantle-ko.newsjel.ly/">koreansk</a>. </p>
     </div>
 
-    <button class="accordion"> Hvordan velges dagens ord? </button>
-    <div class="panel">
-      <p> Jeg sorterte 2,000 vanlige ord I grabbed a random list of the "most popular" 5,000 words
-      in English, and removed anything capitalized or with hyphens, and
-      the word2vec stopwords ("and", "if").  Then I shuffled it.</p>
-    </div>
-
-    <div>Basert på <a href="mailto:novalis@novalis.org">David Turner's</a> <a href="">Semantle</a>, norske versjon av <a href="http://jfainberg.github.io">meg</a>, med word embeddings fra <a href="">TODO</a>.</div>
+    <div>Basert på David Turner's <a href="https://www.semantle.com">Semantle</a>, norske versjon av <a href="http://jfainberg.github.io">meg</a>, med word embeddings fra <a href="http://vectors.nlpl.eu/repository/">NLPL word embeddings repository</a>.</div>
   </footer>
   <div class="dialog-underlay" id="settings-underlay">
     <div class="dialog" id="settings" aria-labelledby="settings-heading" aria-modal="true" role="dialog">
