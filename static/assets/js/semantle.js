@@ -198,16 +198,16 @@ function plural(count, word) {
 function solveStory(guesses, puzzleNumber, won, hints_used) {
     const guess_count = guesses.length;
     if (guess_count === 0) {
-        return `Jeg gav opp med Semantisk spill ${puzzleNumber} uten å gjette en eneste gang. https://semantisk.herokuapp.com/`;
+        return `Jeg gav opp med Ordjakten spill ${puzzleNumber} uten å gjette en eneste gang. http://www.ordjakten.no`;
     }
 
     let guesses_less_hints = guess_count - hints_used;
 
     if (guess_count === 1) {
         if (won) {
-            return `Jeg klarte Semantisk spill ${puzzleNumber} på første forsøk!  https://semantisk.herokuapp.com/`;
+            return `Jeg klarte Ordjakten spill ${puzzleNumber} på første forsøk!  http://www.ordjakten.no`;
         } else {
-            return `Jeg gav opp med Semantisk spill ${puzzleNumber} etter ett eneste forsøk!  https://semantisk.herokuapp.com/`;
+            return `Jeg gav opp med Ordjakten spill ${puzzleNumber} etter ett eneste forsøk!  http://ordjakten.no/`;
         }
     }
 
@@ -231,7 +231,7 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
         for (let entry of guesses_chrono) {
             [similarity, old_guess, percentile, guess_number] = entry;
             if (percentile) {
-                first_hit = `  My first word in the top 1000 was at guess #${guess_number}.  `;
+                first_hit = `  Mitt første ord innen top 1000 var forsøk #${guess_number}.  `;
                 break;
             }
         }
@@ -241,11 +241,11 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
     if (won) {
         const penultimate_guess = guesses_chrono[guesses_chrono.length - 2];
         [similarity, old_guess, percentile, guess_number] = penultimate_guess;
-        last_guess_msg = `My penultimate guess ${describe(similarity, percentile)}.`;
+        last_guess_msg = `Mitt nest siste forsøk ${describe(similarity, percentile)}.`;
     } else {
         const last_guess = guesses_chrono[guesses_chrono.length - 1];
         [similarity, old_guess, percentile, guess_number] = last_guess;
-        last_guess_msg = `My last guess ${describe(similarity, percentile)}.`;
+        last_guess_msg = `Mitt siste forsøk ${describe(similarity, percentile)}.`;
     }
 
     let hints = "";
@@ -253,8 +253,8 @@ function solveStory(guesses, puzzleNumber, won, hints_used) {
         hints = ` with ${hints_used} ${plural(hints_used, "hint")}`;
     }
 
-    const solved = won ? "solved" : "gave up on";
-    return `Jeg ${solved} Semantisk #${puzzleNumber} på ${guesses_less_hints} forsøk${hints}. ${first_guess}${first_hit}${last_guess_msg} https://semantisk.herokuapp.com/`;
+    const solved = won ? "løste" : "gav opp på";
+    return `Jeg ${solved} Ordjakten #${puzzleNumber} på ${guesses_less_hints} forsøk${hints}. ${first_guess}${first_hit}${last_guess_msg} http://www.ordjakten.no`;
 }
 
 
@@ -742,12 +742,12 @@ ${(similarityStory.rest * 100).toFixed(2)}.
         let response;
         let share = '';
         if (!customMode) {
-            share = '<a href="javascript:share();">Share</a> and play again tomorrow. ';
+            share = '<a href="javascript:share();">Del</a> og spill igjen i morgen. ';
         }
         if (won) {
-            response = `<p><b>You found it in ${guesses.length}!  The secret word is ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words. ${share} You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`
+            response = `<p><b>Du fant løsninge på ${guesses.length} forsøk!  Det hemmelige ordet er ${secret}</b>.  ${share} Du kan se nærmeste ord ved å klikke <a href="nearby_1k/${secretBase64}">here</a>.</p>`
         } else {
-            response = `<p><b>You gave up!  The secret word is: ${secret}</b>.  Feel free to keep entering words if you are curious about the similarity to other words.  ${share}  You can see the nearest words <a href="nearby_1k/${secretBase64}">here</a>.</p>`;
+            response = `<p><b>Du ga opp!  Det hemmelige ordet er: ${secret}</b>.  ${share}  Du kan se nærmeste ord ved å klikke <a href="nearby_1k/${secretBase64}">her</a>.</p>`;
         }
 
         if (handleStats) {
