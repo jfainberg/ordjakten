@@ -1,3 +1,9 @@
+# Ordjakten
+
+This is a Norwegian version of David Turner's [Semantle](https://www.semantle.com), heavily based on the original source code.
+
+## Running
+
 So, this is sort of hacked together from a lot of data sources and the
 code is a mess.  Here's a hello world of how to get up and running.
 
@@ -13,7 +19,6 @@ code is a mess.  Here's a hello world of how to get up and running.
 
 6. Run `python semantle.py` for the web server.
 
-Formatting
-==========
+## Development
 
-`black .` to reformat all Python files
+Install the pre-commit to run black, isort and flake8.
