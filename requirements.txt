@@ -18,7 +18,7 @@ six==1.16.0
 smart-open==5.2.1
 tqdm==4.62.3
 Werkzeug==2.2.3
-black==22.1.0
+black==24.3.0
 flake8
 isort
 more-itertools
